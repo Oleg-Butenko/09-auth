@@ -1,25 +1,26 @@
-import { fetchNotes } from "@/lib/api";
 import {
 	QueryClient,
 	HydrationBoundary,
 	dehydrate,
 } from "@tanstack/react-query";
-import NotesClient from "./Notes.client";
+import { fetchNoteById } from "@/lib/api/clientApi";
+import NoteDetailsClient from "./NoteDetails.client";
 import { Metadata } from "next";
 
 type Props = {
-	params: Promise<{ slug: string[] }>;
+	params: Promise<{ id: string }>;
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-	const { slug } = await params;
+	const { id } = await params;
+	const note = await fetchNoteById(id);
 	return {
-		title: ` ${slug[0]} notes`,
-		description: `List of ${slug[0]} notes`,
+		title: ` ${note.title}`,
+		description: note.content.slice(0, 30),
 		openGraph: {
-			title: ` ${slug[0]} notes`,
-			description: `List of ${slug[0]} notes`,
-			url: `https://notehub.com/notes/${slug.join("/")}`,
+			title: ` ${note.title}`,
+			description: note.content.slice(0, 30),
+			url: `https://notehub.com/notes/${id}`,
 			images: [
 				{
 					url: "https://ac.goit.global/fullstack/react/notehub-og-meta.jpg",
@@ -32,21 +33,20 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 	};
 }
 
-const Notes = async ({ params }: Props) => {
-	const { slug } = await params;
-	const tag = slug[0];
+const NoteDetails = async ({ params }: Props) => {
+	const { id } = await params;
 	const queryClient = new QueryClient();
 
 	await queryClient.prefetchQuery({
-		queryKey: ["notes", tag],
-		queryFn: () => fetchNotes("", 1, tag),
+		queryKey: ["note", id],
+		queryFn: () => fetchNoteById(id),
 	});
 
 	return (
 		<HydrationBoundary state={dehydrate(queryClient)}>
-			<NotesClient tag={tag} />
+			<NoteDetailsClient />
 		</HydrationBoundary>
 	);
 };
 
-export default Notes;
+export default NoteDetails;
