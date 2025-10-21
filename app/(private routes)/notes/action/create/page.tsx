@@ -1,4 +1,3 @@
-import React from "react";
 import css from "./CreateNote.module.css";
 import NoteForm from "@/components/NoteForm/NoteForm";
 import { Metadata } from "next";
