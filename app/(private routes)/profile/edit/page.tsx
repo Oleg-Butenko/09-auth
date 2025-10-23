@@ -5,7 +5,6 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { getMe, updateMe } from "@/lib/api/clientApi";
-import { ApiError } from "@/app/api/api";
 import css from "./EditProfilePage.module.css";
 import { useAuthStore } from "@/lib/store/authStore";
 
@@ -43,13 +42,7 @@ export default function EditProfile() {
 				router.push("/profile");
 			}
 		} catch (error) {
-			toast.error(
-				(error as ApiError).response?.data?.response?.validation?.body
-					?.message ??
-					(error as ApiError).response?.data?.response?.message ??
-					(error as ApiError).response?.data?.error ??
-					"Oops... some error"
-			);
+			toast.error((error as Error).cause?.toString() ?? "Oops... some error");
 		}
 	}
 
@@ -70,13 +63,13 @@ export default function EditProfile() {
 
 				<form action={handleSaveUser} className={css.profileInfo}>
 					<div className={css.usernameWrapper}>
-						<label htmlFor="username">Username: {userName}</label>
+						<label htmlFor="username">Username</label>
 						<input
 							id="username"
 							name="username"
 							type="text"
 							className={css.input}
-							defaultValue={userName}
+							value={userName}
 							onChange={handleChange}
 						/>
 					</div>
