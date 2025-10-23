@@ -1,11 +1,11 @@
 "use client";
 
-import { ApiError } from "@/app/api/api";
 import { login, UserRequest } from "@/lib/api/clientApi";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useAuthStore } from "@/lib/store/authStore";
 import css from "./SignInPage.module.css";
+import toast from "react-hot-toast";
 
 export default function SignIn() {
 	const router = useRouter();
@@ -23,10 +23,7 @@ export default function SignIn() {
 			}
 		} catch (error) {
 			setError(
-				(error as ApiError).response?.data?.response?.validation?.body
-					?.message ??
-					(error as ApiError).response?.data?.response?.message ??
-					"Oops... some error"
+				toast.error((error as Error).cause?.toString() ?? "Oops... some error")
 			);
 		}
 	};

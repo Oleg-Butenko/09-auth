@@ -4,9 +4,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/lib/store/authStore";
 import { register, UserRequest } from "@/lib/api/clientApi";
-import { ApiError } from "@/app/api/api";
-// import css from "./SignUpPage.module.css";
 import css from "./SignUpPage.module.css";
+import toast from "react-hot-toast";
 
 export default function SignUp() {
 	const router = useRouter();
@@ -23,10 +22,7 @@ export default function SignUp() {
 			}
 		} catch (error) {
 			setError(
-				(error as ApiError).response?.data?.response?.validation?.body
-					?.message ??
-					(error as ApiError).response?.data?.response?.message ??
-					"Oops... some error"
+				toast.error((error as Error).cause?.toString() ?? "Oops... some error")
 			);
 		}
 	};
